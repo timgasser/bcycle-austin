@@ -51,7 +51,7 @@ class station(object):
         self.lon = lon
         self.name = name
         self.address = address
-        self.capacity = capacity
+        # self.capacity = capacity
         self.date = date
         self.time = time
 
@@ -77,11 +77,14 @@ file_station_count = 0
 
 station_id = 0
 
+station_list = list()
+
+
 for bike_idx, bike_filename in tqdm(enumerate(files),  total=len(files)):
     # print('Processing {} of {} files'.format(bike_idx, num_files))
     station_counter += 1
-    if (station_counter == 10):
-        break
+    # if (station_counter == 10):
+    #     break
 
     date = str(date_re.match(bike_filename).groups(0)[0])
     time = str(time_re.match(bike_filename).groups(0)[0])
@@ -113,11 +116,13 @@ for bike_idx, bike_filename in tqdm(enumerate(files),  total=len(files)):
                 total = bikes + avail
 
                 new_station = station(station_id, lat, lon, name, address, total, date, time)
+
                 if pos_tuple not in stations:
                     print('Date {}, Time {}'.format(date, time))
                     print('Adding new station {}'.format(new_station.name))
                     stations[pos_tuple] = new_station
                     station_id += 1
+                    station_list.append(new_station.__dict__)
                 else:
                     old_station = stations[pos_tuple]
                     assert new_station.name == old_station.name, print(new_station.name, old_station.name)
@@ -134,6 +139,12 @@ for bike_idx, bike_filename in tqdm(enumerate(files),  total=len(files)):
 print('Found {} stations'.format(station_counter))
 [print(stations[station]) for station in stations]
 
+print(station_list)
 
-stations_df = pd.DataFrame.from_dict(stations.__dict__, orient='index')
-stations_df.show()
+stations_df = pd.DataFrame(station_list)
+stations_df.reset_index('id')
+stations_df = stations_df[['name', 'address','lat','lon', 'date', 'time']]
+print(stations_df)
+
+stations_df.to_csv('../input/stations.csv', index_label='station_id')
+
