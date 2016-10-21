@@ -41,8 +41,8 @@ bike_list = list()
 
 
 file_counter = 0
-verbose = True
-short_run = True
+verbose = False
+short_run = False
 
 for bike_idx, bike_filename in tqdm(enumerate(files),  total=len(files)):
     file_counter += 1
@@ -70,8 +70,8 @@ for bike_idx, bike_filename in tqdm(enumerate(files),  total=len(files)):
             if (match != None):
 
                 name = str(station_re.match(line).groups()[STAT_NAME])
-                address = station_re.match(line).groups()[STAT_ADDRESS].replace('<br />', ', ')
-                address.replace('<br />', ', ')
+                address = str(station_re.match(line).groups()[STAT_ADDRESS].replace('<br />', ', '))
+                # address.replace('<br />', ', ')
                 bikes = int(station_re.match(line).groups()[STAT_BIKES])
                 docks = int(station_re.match(line).groups()[STAT_DOCKS])
 
@@ -81,7 +81,7 @@ for bike_idx, bike_filename in tqdm(enumerate(files),  total=len(files)):
                     new_station['name'] = name
                     new_station['address'] = address
                     new_station['lat'] = latitude
-                    new_station['long'] = longitude
+                    new_station['lon'] = longitude
                     new_station['date'] = date
                     new_station['time'] = time
                     stations[latlon] = new_station
@@ -111,21 +111,10 @@ print('Found records from {} to {}'.format(bike_list[0]['date'], bike_list[-1]['
 # # Convert to pandas dataframes
 # # stations_inv_dict = {v: k for k, v in stations_dict.items()}
 stations_df = pd.DataFrame.from_dict(stations, orient='index')
-stations_df.to_csv(DATA_DIR + '/stations.csv')
+stations_df = stations_df[['station_id', 'name', 'address', 'lat', 'lon', 'date', 'time']]
+stations_df.sort_values('station_id', ascending=True, inplace=True)
+stations_df.to_csv(DATA_DIR + '/stations.csv', index=False)
 
 bikes_df = pd.DataFrame(bike_list)
 bikes_df = bikes_df[['station_id', 'date', 'time', 'bikes', 'docks']]
-print(bikes_df)
 bikes_df.to_csv(DATA_DIR + '/bikes.csv', index=False)
-
-# # stations_df = stations_df[['station_id', 'name', 'address', 'lat', 'long', 'capacity']]
-#
-# bikes_df = pd.DataFrame(bike_list)
-# # bikes_df = bikes_df[['station_id', 'datetime', 'bikes', 'avail']]
-#
-# # print('Stations dataframe')
-# # print(stations_df)
-# print('Bikes dataframe')
-# print(bikes_df)
-#
-# bikes_df.to_csv(DATA_DIR + '/bikes.csv', index=False)
