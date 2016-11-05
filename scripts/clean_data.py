@@ -82,8 +82,7 @@ for bike_idx, bike_filename in tqdm(enumerate(files),  total=len(files)):
                     new_station['address'] = address
                     new_station['lat'] = latitude
                     new_station['lon'] = longitude
-                    new_station['date'] = date
-                    new_station['time'] = time
+                    new_station['datetime'] = datetime_string
                     stations[latlon] = new_station
 
                     station_id += 1
@@ -93,8 +92,7 @@ for bike_idx, bike_filename in tqdm(enumerate(files),  total=len(files)):
                 new_bike = dict()
                 new_bike['station_id'] = stations[latlon]['station_id']
                 new_bike['latlon'] = latlon
-                new_bike['date'] = date
-                new_bike['time'] = time
+                new_bike['datetime'] = datetime_string
                 new_bike['bikes'] = bikes
                 new_bike['docks'] = docks
                 bike_list.append(new_bike)
@@ -104,17 +102,17 @@ for bike_idx, bike_filename in tqdm(enumerate(files),  total=len(files)):
 
 
 print('Found {} stations'.format(len(stations)))
-print('Found records from {} to {}'.format(bike_list[0]['date'], bike_list[-1]['date']))
+print('Found records from {} to {}'.format(bike_list[0]['datetime'], bike_list[-1]['datetime']))
 
 # print('Converting station and bike data to csv file')
 #
 # # Convert to pandas dataframes
 # # stations_inv_dict = {v: k for k, v in stations_dict.items()}
 stations_df = pd.DataFrame.from_dict(stations, orient='index')
-stations_df = stations_df[['station_id', 'name', 'address', 'lat', 'lon', 'date', 'time']]
+stations_df = stations_df[['station_id', 'name', 'address', 'lat', 'lon', 'datetime']]
 stations_df.sort_values('station_id', ascending=True, inplace=True)
 stations_df.to_csv(DATA_DIR + '/stations.csv', index=False)
 
 bikes_df = pd.DataFrame(bike_list)
-bikes_df = bikes_df[['station_id', 'date', 'time', 'bikes', 'docks']]
+bikes_df = bikes_df[['station_id', 'datetime', 'bikes', 'docks']]
 bikes_df.to_csv(DATA_DIR + '/bikes.csv', index=False)
