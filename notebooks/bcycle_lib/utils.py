@@ -105,3 +105,52 @@ def haversine_dist(lat1, lon1, lat2, lon2, R=3961):
     
     return d
 
+def load_daily_rentals():
+    # Sort the bikes_df dataframe by station_id first, and then datetime so we
+    # can use a diff() and get the changes by time for each station
+    bikes_df = load_bikes()
+    bikes_df = bikes_df.sort_values(['station_id', 'datetime']).copy()
+    stations = bikes_df['station_id'].unique()
+
+    # Our dataframe is grouped by station_id first now, so grab each station in
+    # turn and do a diff() on bikes and docks for each station individually
+    diff_list = list()
+    for station in stations:
+        station_diff_df = bikes_df[bikes_df['station_id'] == station].copy()
+        station_diff_df['bikes_diff'] = station_diff_df['bikes'].diff()
+        station_diff_df['docks_diff'] = station_diff_df['docks'].diff()
+        diff_list.append(station_diff_df)
+
+    # Concatenate the station dataframes back together into a single one.
+    # Make sure we didn't lose any rows in the process (!)
+    bikes_diff_df = pd.concat(diff_list)
+
+    # The first row of each station-wise diff is filled with NaNs, store a 0 in these fields
+    # then we can convert the data type from floats to int8s 
+    bikes_diff_df.fillna(0, inplace=True)
+    bikes_diff_df[['bikes_diff', 'docks_diff']] = bikes_diff_df[['bikes_diff', 'docks_diff']].astype(np.int8)
+    bikes_diff_df.index = bikes_diff_df['datetime']
+    bikes_diff_df.drop('datetime', axis=1, inplace=True)
+    assert(bikes_df.shape[0] == bikes_diff_df.shape[0]) 
+
+    bike_trips_df = bikes_diff_df
+    bike_trips_df['checkouts'] = bike_trips_df['bikes_diff']
+    bike_trips_df.loc[bike_trips_df['checkouts'] > 0, 'checkouts'] = 0
+    bike_trips_df['checkouts'] = bike_trips_df['checkouts'].abs()
+
+    # Conversely, checkins are positive `bikes_diff` values
+    bike_trips_df['checkins'] = bike_trips_df['bikes_diff']
+    bike_trips_df.loc[bike_trips_df['checkins'] < 0, 'checkins'] = 0
+    bike_trips_df['checkins'] = bike_trips_df['checkins'].abs()
+
+    # Might want to use sum of checkouts and checkins for find "busiest" stations
+    bike_trips_df['totals'] = bike_trips_df['checkouts'] + bike_trips_df['checkins']
+
+    daily_bikes_df = bike_trips_df.copy()
+    daily_bikes_df = daily_bikes_df.reset_index()
+    daily_bikes_df = daily_bikes_df[['datetime', 'checkouts']]
+    daily_bikes_df.columns = ['datetime', 'rentals']
+    daily_bikes_df = daily_bikes_df.groupby('datetime').sum()
+    daily_bikes_df = daily_bikes_df.resample('1D').sum()
+
+    return daily_bikes_df
