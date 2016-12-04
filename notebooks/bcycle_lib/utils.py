@@ -105,7 +105,7 @@ def haversine_dist(lat1, lon1, lat2, lon2, R=3961):
     
     return d
 
-def load_daily_rentals():
+def load_bike_trips():
     # Sort the bikes_df dataframe by station_id first, and then datetime so we
     # can use a diff() and get the changes by time for each station
     bikes_df = load_bikes()
@@ -145,7 +145,12 @@ def load_daily_rentals():
 
     # Might want to use sum of checkouts and checkins for find "busiest" stations
     bike_trips_df['totals'] = bike_trips_df['checkouts'] + bike_trips_df['checkins']
+    
+    return bike_trips_df
 
+def load_daily_rentals():
+
+    bike_trips_df = load_bike_trips()
     daily_bikes_df = bike_trips_df.copy()
     daily_bikes_df = daily_bikes_df.reset_index()
     daily_bikes_df = daily_bikes_df[['datetime', 'checkouts']]
