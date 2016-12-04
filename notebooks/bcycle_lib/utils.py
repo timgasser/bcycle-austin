@@ -149,8 +149,8 @@ def load_daily_rentals():
     daily_bikes_df = bike_trips_df.copy()
     daily_bikes_df = daily_bikes_df.reset_index()
     daily_bikes_df = daily_bikes_df[['datetime', 'checkouts']]
-    daily_bikes_df.columns = ['datetime', 'rentals']
-    daily_bikes_df = daily_bikes_df.groupby('datetime').sum()
+    daily_bikes_df.columns = ['date', 'rentals']
+    daily_bikes_df = daily_bikes_df.groupby('date').sum()
     daily_bikes_df = daily_bikes_df.resample('1D').sum()
 
     return daily_bikes_df
