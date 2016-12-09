@@ -148,10 +148,12 @@ def load_bike_trips():
     
     return bike_trips_df
 
-def load_daily_rentals():
+def load_daily_rentals(all_stations=False):
 
     bike_trips_df = load_bike_trips()
     daily_bikes_df = bike_trips_df.copy()
+    if not all_stations:
+        daily_bikes_df = daily_bikes_df[daily_bikes_df['station_id'] < 49]
     daily_bikes_df = daily_bikes_df.reset_index()
     daily_bikes_df = daily_bikes_df[['datetime', 'checkouts']]
     daily_bikes_df.columns = ['date', 'rentals']
