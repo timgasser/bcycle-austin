@@ -81,7 +81,7 @@ def load_weather(file=INPUT_DIR + '/weather.csv'):
             [events.add(word.lower()) for word in line]
     
     for event in events:
-        df[event] = df['events'].apply(str.lower).str.contains(event)
+        df[event] = df['events'].apply(str.lower).str.contains(event).astype(np.uint8)
     
     df = df.drop(['events', 'none'], axis=1)
     return df
