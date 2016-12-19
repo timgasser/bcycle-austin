@@ -4,7 +4,7 @@ This github repo contains all the code used in the 3-part BCycle analysis posted
 
 * [Analyzing BCycle Stations](https://austinstartups.com/analyzing-austin-bcycle-rentals-stations-d9a1863d17e9#.ytrns0u09)
 * [Analyzing BCycle Rentals](https://austinstartups.com/analyzing-austin-bcycle-rentals-34e52424858a#.4jtsq6yz2) 
-* Predicting BCycle rentals with machine learning
+* [Machine Learning with Austin BCycle](https://austinstartups.com/machine-learning-with-austin-bcycle-55f90456e72c#.pll2et6xt)
 
 ## Directory hierarchy
 
