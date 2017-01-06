@@ -161,3 +161,5 @@ def load_daily_rentals(all_stations=False):
     daily_bikes_df = daily_bikes_df.resample('1D').sum()
 
     return daily_bikes_df
+
+
