@@ -105,7 +105,7 @@ def clean_weather(df):
                  'precipitation', 'cloud_cover', 'events']
     
     # Convert column types appropriately
-    df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')  
+    df.loc[:,'date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')  
     df = df.set_index('date', drop=True)
     
     df[['max_temp', 'min_temp']] = df[['max_temp', 'min_temp']].astype(np.uint8)
@@ -234,7 +234,7 @@ def plot_val(val_df, pred_col, true_col, title):
     '''
     def plot_ts(df, pred, true, title, ax):
         '''Generates one of the subplots to show time series'''
-        ax = df.plot(y=[pred, true], ax=ax) # , color='black', style=['--', '-'])
+        ax = df.plot(y=[true, pred], ax=ax) # , color='black', style=['--', '-'])
         ax.set_xlabel('Date', fontdict={'size' : 14})
         ax.set_ylabel('Rentals', fontdict={'size' : 14})
         ax.set_title(title, fontdict={'size' : 16}) 
@@ -329,7 +329,7 @@ def plot_scores(df, title, sort_col=None):
     
 # Model training functions
 
-def reg_x_y_split(df, target_col, ohe_cols=None, z_norm_cols=None, minmax_norm_cols=None):
+def reg_x_y_split(df, target_col, target_func=None, ohe_cols=None, z_norm_cols=None, minmax_norm_cols=None):
     ''' Returns X and y to train regressor
     INPUT: df = Dataframe to be converted to numpy arrays 
            target_col = Column name of the target variable
@@ -390,6 +390,9 @@ def reg_x_y_split(df, target_col, ohe_cols=None, z_norm_cols=None, minmax_norm_c
         
     y = df[target_col].values
 
+    if target_func is not None:
+        y = target_func(y)
+    
     return X, y, df_out
 
 
@@ -400,8 +403,9 @@ def add_time_features(df):
     
     '''
     df.loc[:,'dayofweek'] = df.index.dayofweek
-    df.loc[:,'hour'] = df.index.hour.astype(str)
-    df.loc[:,'day-hour'] = df['dayofweek'].astype(str) + '-' + df['hour']
-    df.loc[:,'weekday'] = (df['dayofweek'] < 5).astype(np.uint8)
-    df.loc[:,'weekend'] = (df['dayofweek'] >= 5).astype(np.uint8)
+    df.loc[:,'hour'] = df.index.hour
+    df.loc[:,'day-hour'] = df.loc[:,'dayofweek'].astype(str) + '-' + df.loc[:,'hour'].astype(str)
+    df = df.drop(['dayofweek', 'hour'], axis=1)
+#    df.loc[:,'weekday'] = (df['dayofweek'] < 5).astype(np.uint8)
+#    df.loc[:,'weekend'] = (df['dayofweek'] >= 5).astype(np.uint8)
     return df
