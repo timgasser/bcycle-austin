@@ -259,7 +259,8 @@ def plot_prediction(train_df, val_df, pred_col, true_col, title):
     '''
     def plot_ts(df, pred, true, title, ax):
         '''Generates one of the subplots to show time series'''
-        ax = df.plot(y=[pred, true], ax=ax) # , color='black', style=['--', '-'])
+        plot_df = df.resample('1D').sum()
+        ax = plot_df.plot(y=[pred, true], ax=ax) # , color='black', style=['--', '-'])
         ax.set_xlabel('', fontdict={'size' : 14})
         ax.set_ylabel('Rentals', fontdict={'size' : 14})
         ax.set_title(title, fontdict={'size' : 16}) 
