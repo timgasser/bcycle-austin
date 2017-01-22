@@ -314,15 +314,15 @@ def plot_scores(df, title, sort_col=None):
     '''
     fig, ax = plt.subplots(1,1, figsize=(12,8)) 
     if sort_col is not None:
-        scores_df.sort_values(sort_col).plot.barh(ax=ax)
+        df.sort_values(sort_col).plot.barh(ax=ax)
     else:
-        scores_df.sort_values(sort_col).plot.barh(ax=ax)
+        df.sort_values(sort_col).plot.barh(ax=ax)
 
     ax.set_xlabel('RMSE', fontdict={'size' : 14})
     ax.set_title(title, fontdict={'size' : 18}) 
     ttl = ax.title
     ttl.set_position([.5, 1.02])
-    ax.legend(['Train RMSE', 'Validation RMSE'], fontsize=14, loc=0)
+    ax.legend(['Train RMSE', 'Validation RMSE'], fontsize=14, loc=4)
     ax.tick_params(axis='x', labelsize=14)
     ax.tick_params(axis='y', labelsize=14)
 
@@ -330,7 +330,7 @@ def plot_scores(df, title, sort_col=None):
     
 # Model training functions
 
-def reg_x_y_split(df, target_col, target_func=None, ohe_cols=None, z_norm_cols=None, minmax_norm_cols=None):
+def reg_x_y_split(df, target_col, target_func=None, ohe_cols=None, z_norm_cols=None, minmax_norm_cols=None, verbose=False):
     ''' Returns X and y to train regressor
     INPUT: df = Dataframe to be converted to numpy arrays 
            target_col = Column name of the target variable
@@ -348,7 +348,7 @@ def reg_x_y_split(df, target_col, target_func=None, ohe_cols=None, z_norm_cols=N
     # Convert categorical columns to one-hot encoding
     if ohe_cols is not None:
         for col in ohe_cols:
-            print('Binarizing column {}'.format(col))
+            if verbose: print('Binarizing column {}'.format(col))
             lbe = LabelBinarizer()
             ohe_out = lbe.fit_transform(df_X[col])
             if X is None:
@@ -360,7 +360,7 @@ def reg_x_y_split(df, target_col, target_func=None, ohe_cols=None, z_norm_cols=N
     # Z-normalize relevant columns
     if z_norm_cols is not None:
         for col in z_norm_cols:
-            print('Z-Normalizing column {}'.format(col))
+            if verbose: print('Z-Normalizing column {}'.format(col))
             scaled_col = scale(df[col].astype(np.float64))
             scaled_col = scaled_col[:,np.newaxis]
             df_out[col] = scaled_col
@@ -372,7 +372,7 @@ def reg_x_y_split(df, target_col, target_func=None, ohe_cols=None, z_norm_cols=N
 
     if minmax_norm_cols is not None:
         for col in minmax_norm_cols:
-            print('Min-max scaling column {}'.format(col))
+            if verbose: print('Min-max scaling column {}'.format(col))
             mms = MinMaxScaler()
             mms_col = mms.fit_transform(df_X[col])
             mms_col = mms_col[:, np.newaxis]
