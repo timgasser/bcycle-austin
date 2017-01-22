@@ -1,6 +1,6 @@
 # Austin BCycle Analysis
 
-This github repo contains all the code used in the 3-part BCycle analysis posted on Medium. To read the posts, click on the links below.
+This github repo contains all the code and data used in the 3-part BCycle analysis posted on Medium. To read the posts, click on the links below.
 
 * [Analyzing BCycle Stations](https://austinstartups.com/analyzing-austin-bcycle-rentals-stations-d9a1863d17e9#.ytrns0u09)
 * [Analyzing BCycle Rentals](https://austinstartups.com/analyzing-austin-bcycle-rentals-34e52424858a#.4jtsq6yz2) 
@@ -84,3 +84,35 @@ $ python clean_data.py
 ```
 
 Once this completes, all the CSV files will be ready to go in the `input` directory.
+
+
+### Notebooks
+
+The notebooks are split into those which use the 2-months of data I scraped, and the ones that use the full 3-year dataset from AUstin BCycle. The ones using the full dataset have `bcycle_all_data` in their title. The others run with the csv files supplied in zip format in Git.
+
+#### April/May 2016 notebooks
+
+Please make sure you unzip the zip files in the `input` directory before running these notebooks.
+
+* `bcycle_stations.ipynb` - Analysis of BCycle stations, looking at which aren't full or empty 90% of the time.
+
+* `bcycle_bikes.ipynb` - Analysis of bike trips leaving and arriving at  stations.
+
+* `bcycle_weather.ipynb` - Plots of weather during April and May 2016 in Austin.
+
+* `bcycle_hourly_rental_models.ipynb` - Machine learning models predicting hourly rentals.
+
+#### Full data notebooks
+
+The data needed for these notebooks has to be requested from Austin BCycle. You can still browse these, and see the results though.
+
+* `bcycle_all_data_clean.ipynb` - Notebook to clean the raw BCycle data. Includes:
+    * Removing stations which are only found in checkout or checkin column.
+    * Removing non-numeric bike IDs in the `bike_id` field.
+    * Geocoding stations whose locations aren't available on the current website.
+    
+* `bcycle_all_data_eda.ipynb` - Exploratory data analysis on the full data.
+
+* `bcycle_all_data_models.ipynb` - Machine learning models to predict hourly rentals using the full 3 year dataset.
+
+

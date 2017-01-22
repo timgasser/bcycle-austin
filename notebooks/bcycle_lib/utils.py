@@ -11,14 +11,17 @@ def load_bikes(file=INPUT_DIR + '/bikes.csv'):
     INPUT: Filename to read (defaults to `../input/bikes.csv`
     RETURNS: Pandas dataframe containing bikes information
     '''
-    bikes_df = pd.read_csv(file,
-                          dtype={'station_id' : np.int8,
-                                 'bikes' : np.int8,
-                                 'docks' : np.int8}
-                           )
-    bikes_df['datetime'] = pd.to_datetime(bikes_df['datetime'], format='%Y-%m-%d %H:%M:%S')
-    return bikes_df
-    
+    try:
+        bikes_df = pd.read_csv(file,
+                              dtype={'station_id' : np.int8,
+                                     'bikes' : np.int8,
+                                     'docks' : np.int8}
+                               )
+        bikes_df['datetime'] = pd.to_datetime(bikes_df['datetime'], format='%Y-%m-%d %H:%M:%S')
+        return bikes_df
+    except OSError as e:
+        print('Error opening {0}. Do you need to unzip {0}.zip?'.format(file))
+        return None
 
 def load_stations(file=INPUT_DIR + '/stations.csv'):
     '''
@@ -26,17 +29,26 @@ def load_stations(file=INPUT_DIR + '/stations.csv'):
     INPUT: Filename to read (defaults to `../input/stations.csv`
     RETURNS: Pandas dataframe containing stations information
     '''
-    stations_df = pd.read_csv(file,
-                              dtype={'station_id' : np.int8,
-                                 'lat' : np.float32,
-                                 'lon' : np.float32}
-                              )
-    stations_df['datetime'] = pd.to_datetime(stations_df['datetime'], format='%Y-%m-%d %H:%M:%S')                           
-    return stations_df
+    try:
+        stations_df = pd.read_csv(file,
+                                  dtype={'station_id' : np.int8,
+                                     'lat' : np.float32,
+                                     'lon' : np.float32}
+                                  )
+        stations_df['datetime'] = pd.to_datetime(stations_df['datetime'], format='%Y-%m-%d %H:%M:%S')                           
+        return stations_df
+    except OSError as e:
+        print('Error opening {0}. Do you need to unzip {0}.zip?'.format(file))
+        return None
 
+    
 def load_weather(file=INPUT_DIR + '/weather.csv'):
     '''Loads the weather CSV and converts types'''
-    df = pd.read_csv(file)
+    try:
+        df = pd.read_csv(file)
+    except OSError as e:
+        print('Error opening {0}. Do you need to unzip {0}.zip?'.format(file))
+        return None     
     
     # Remove whitespace and keep min/max values
     df.columns = [col.strip() for col in df.columns]
